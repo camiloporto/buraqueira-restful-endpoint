@@ -54,7 +54,7 @@ public class BuraqueiraRestTest extends AbstractTestNGSpringContextTests {
         String jsonContent = toJson(d);
 
         mvc.perform(MockMvcRequestBuilders
-                .post("/")
+                .post("/vibration")
                 .content(jsonContent)
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .accept(MediaType.APPLICATION_JSON_UTF8))

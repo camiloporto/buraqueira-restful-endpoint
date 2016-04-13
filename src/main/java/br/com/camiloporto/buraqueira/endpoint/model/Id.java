@@ -16,6 +16,9 @@ public class Id implements Serializable {
     private String sender;
     private Long timestamp;
 
+    public Id() {
+    }
+
     public Id(String sender, long timestamp) {
 
         this.sender = sender;
