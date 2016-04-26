@@ -22,6 +22,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -71,6 +72,31 @@ public class BuraqueiraRestTest extends AbstractTestNGSpringContextTests {
 
 
         AccelerometerData generatedId = dataRepository.findOne(new Id(sender, time));
+        Assert.assertNotNull(generatedId);
+
+    }
+
+    @Test
+    public void shouldReceiveRawAccelerometerDataInBatch() throws Exception {
+        long time = System.currentTimeMillis();
+        long time2 = time + 15323;
+        AccelerometerData d = new AccelerometerData(sender, 4.01, 3.02, 7.03, time);
+        AccelerometerData d2 = new AccelerometerData(sender, 7.03, 5.021, 7.056, time2);
+        String jsonContent = toJson(Arrays.asList(d, d2));
+
+        mvc.perform(MockMvcRequestBuilders
+                .post("/vibrationBatch")
+                .content(jsonContent)
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .accept(MediaType.APPLICATION_JSON_UTF8))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+
+        AccelerometerData generatedId = dataRepository.findOne(new Id(sender, time));
+        Assert.assertNotNull(generatedId);
+
+        generatedId = dataRepository.findOne(new Id(sender, time2));
         Assert.assertNotNull(generatedId);
 
     }

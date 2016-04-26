@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -32,6 +33,16 @@ public class AccelerometerRest {
             consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public void receiveAccelerometerData(@RequestBody AccelerometerData data) {
+
+        accelerometerDataRepository.save(data);
+    }
+
+    @RequestMapping(
+            value = "/vibrationBatch",
+            method = RequestMethod.POST,
+            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public void receiveAccelerometerDataStream(@RequestBody List<AccelerometerData> data) {
 
         accelerometerDataRepository.save(data);
     }
