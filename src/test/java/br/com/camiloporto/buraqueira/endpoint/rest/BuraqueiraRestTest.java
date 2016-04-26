@@ -3,9 +3,12 @@ package br.com.camiloporto.buraqueira.endpoint.rest;
 import br.com.camiloporto.buraqueira.BuraqueiraRestfulEndpointApplication;
 import br.com.camiloporto.buraqueira.endpoint.model.AccelerometerData;
 import br.com.camiloporto.buraqueira.endpoint.model.Id;
+import br.com.camiloporto.buraqueira.endpoint.model.Location;
 import br.com.camiloporto.buraqueira.endpoint.repository.AccelerometerDataRepository;
+import br.com.camiloporto.buraqueira.endpoint.repository.LocationRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongodb.DBCollection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.http.MediaType;
@@ -17,6 +20,8 @@ import org.springframework.web.context.WebApplicationContext;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+
+import java.math.BigDecimal;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -41,6 +46,9 @@ public class BuraqueiraRestTest extends AbstractTestNGSpringContextTests {
 
     private static final String sender = "sender@email.com";
 
+    @Autowired
+    private LocationRepository locationRepository;
+
     @BeforeClass
     public void setUp() throws Exception {
         mvc =  webAppContextSetup(webApplicationContext)
@@ -50,7 +58,7 @@ public class BuraqueiraRestTest extends AbstractTestNGSpringContextTests {
     @Test
     public void shouldReceiveRawAccelerometerData() throws Exception {
         long time = System.currentTimeMillis();
-        AccelerometerData d = new AccelerometerData(sender, 4.0, 3.0, 7.0, time);
+        AccelerometerData d = new AccelerometerData(sender, 4.01, 3.02, 7.03, time);
         String jsonContent = toJson(d);
 
         mvc.perform(MockMvcRequestBuilders
@@ -65,11 +73,31 @@ public class BuraqueiraRestTest extends AbstractTestNGSpringContextTests {
         AccelerometerData generatedId = dataRepository.findOne(new Id(sender, time));
         Assert.assertNotNull(generatedId);
 
-        //FIXME make this test pass
+    }
+
+    @Test
+    public void shouldReceiveLocationData() throws Exception {
+        long time = System.currentTimeMillis();
+        Location location = new Location(sender, time, BigDecimal.valueOf(-12.4567), BigDecimal.valueOf(32.45678));
+        String jsonContent = toJson(location);
+
+        mvc.perform(MockMvcRequestBuilders
+                .post("/location")
+                .content(jsonContent)
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .accept(MediaType.APPLICATION_JSON_UTF8))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+
+        ;
+        Location generatedId = locationRepository.findOne(new Id(sender, time));
+        Assert.assertNotNull(generatedId);
+
 
     }
 
-    private String toJson(AccelerometerData p) throws JsonProcessingException {
+    private String toJson(Object p) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         return objectMapper.writeValueAsString(p);
     }

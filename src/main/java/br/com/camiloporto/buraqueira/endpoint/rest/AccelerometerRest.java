@@ -1,8 +1,10 @@
 package br.com.camiloporto.buraqueira.endpoint.rest;
 
 import br.com.camiloporto.buraqueira.endpoint.model.AccelerometerData;
+import br.com.camiloporto.buraqueira.endpoint.model.Location;
 import br.com.camiloporto.buraqueira.endpoint.repository.AccelerometerDataRepository;
 
+import br.com.camiloporto.buraqueira.endpoint.repository.LocationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,7 +21,10 @@ import java.util.Map;
 public class AccelerometerRest {
 
     @Autowired
-    private AccelerometerDataRepository repository;
+    private AccelerometerDataRepository accelerometerDataRepository;
+
+    @Autowired
+    private LocationRepository locationRepository;
 
     @RequestMapping(
             value = "/vibration",
@@ -28,9 +33,7 @@ public class AccelerometerRest {
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public void receiveAccelerometerData(@RequestBody AccelerometerData data) {
 
-        System.out.println(data);
-
-        repository.save(data);
+        accelerometerDataRepository.save(data);
     }
 
     @RequestMapping(
@@ -38,9 +41,9 @@ public class AccelerometerRest {
             method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public void receiveLocationData(@RequestBody Map<String, Object> data) {
+    public void receiveLocationData(@RequestBody Location location) {
 
-        System.out.println(data);
+        locationRepository.save(location);
 
     }
 }

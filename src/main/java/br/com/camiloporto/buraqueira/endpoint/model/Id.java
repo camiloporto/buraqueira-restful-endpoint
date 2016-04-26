@@ -3,14 +3,14 @@ package br.com.camiloporto.buraqueira.endpoint.model;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.Embeddable;
+
 import java.io.Serializable;
 
 /**
  * Created by camiloporto on 10/04/16.
  */
 
-@Embeddable
+
 @Getter @Setter
 public class Id implements Serializable {
     private String sender;
